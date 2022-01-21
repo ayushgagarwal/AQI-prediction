@@ -1,0 +1,115 @@
+
+AQI prediciton - steps to run the project
+
+#################### DESCRIPTION ####################
+This package contains relevant code and files for 3 different aspects of the project:
+1. Data Collection and Cleaning: AQI_Dataset_20211102.ipynb, AQI_Merged_Dataset_V1_20211105.ipynb, Weather_Data.ipynb
+2. Time Series Forecasting: coordinates.ipynb, merged_dataset_with_neighbors.ipynb, VAR_model_with_neighbors_all-100.ipynb, final_output.ipynb, merger_power_automate.ipynb
+3. Web Application: repo hosted on www.github.com/sandeepsainath/test-app
+4. Tableau Dashboarding: AQI_Dashboard.twbx
+Note: This user guide assumes that the user has installed Python 3.
+
+#################### INSTALLATION ####################
+
+Data Collection/Cleaning:
+1. Using your Google account, navigate to Google Cloud (console.cloud.google.com) and select the project you will be working on. 
+2. Search for ‘Service Accounts’, navigate to the page, and click ‘Create Service Account’. 
+3. Name the Service Account and under ‘Select a role’ select ‘Basic’ then ‘Owner’ 
+4. Click ‘Done’. Click the menu icon next to the account created and select ‘Manage Keys’. 
+5. Click ‘Add Key’ and then ‘Create New Key’. Select the file type as JSON.
+6. This will cause a file to be downloaded. This is the file you will need to point to in the credentials line, to allow the code to access BigQuery.
+7. To obtain the weather forecast from OpenWeatherMap, you need to sign up for a free account to get an API ID.
+8. Download and extract the team020final.zip file. Run ‘pip install -r requirements.txt’ to install all required Python packages.
+
+Time Series Forecasting:
+1. Navigate to the Get Neighbours folder and run the coordinates.ipynb file. This will help you to get the 5 nearest neighbors of each county
+2. This would be used in the model as well
+3. Go to the merged with neighbors folder and run merged_dataset_with_neighbors ipynb file to combine the datasets.
+4. This is our final dataset that will be used while modelling (merged_pollutant_dataset_with_neighbors.csv)
+5. Go to the forecasting models folder
+6. We have used 2 models – Vector autoregression and ARIMA. On finding that VAR was better, we went ahead with that.
+7. Run the VAR_model_with_neighbors_all-100.ipynb  and Arima_model files to get the models, it takes time to run the models. After running VAR_model_with_neighbors_all-100.ipynb, we will get the forecasts for the next few weeks.
+8. Run final_output ipynb file in the VAR folder to get the tomorrows_forecast.csv
+9. Run the merger_power_automate ipynb file in power_automate_input folder to get the final recommendations.
+
+Web Application:
+1. Clone or fork the GitHub repo ‘test-app’ onto your computer.
+2. Install relevant Python requirements using “pip install -r requirements.txt” on the command line from the repo directory.
+3. Ensure either the default “tomorrows_forecast.csv” or a new version from the time series forecasting step is present in the directory. This file contains the unique state and county names from the raw data that will be used to present dropdowns for users to give their region.
+4. Run “python app.py run” from the repo directory. This will begin a local development server on https://127.0.0.1:5000/ which will display the current version of the web app.
+
+Tableau:
+1. Download and install Tableau from the URL: https://www.tableau.com/products/desktop/download
+
+#################### EXECUTION ####################
+The workflow to run the entire application is as follows: 
+1. Run data cleaning/merging scripts 
+2. Run forecast scripts
+3. Upload forecast files to Tableau and web app repo
+4. Deploy web app
+5. Download users.db file from Render (at weekly or any other appropriate frequency)
+6. Upload users.db file to Power Automate and deploy emails 
+
+(1)  Data Collection and Cleaning:
+1. Change the environment variable so that it points to the JSON downloaded from Google earlier
+2. In the data collection and cleaning file (AQI_Dataset_20211102.ipynb), update the table in the SQL command to whichever pollutant you are trying to obtain data for (co, no2, o3, pm10, pm25_frm, pm25_nonfrm, so2)
+3. For more current data, download daily pollutant files from EPA website (https://aqs.epa.gov/aqsweb/airdata/download_files.html#Daily) for each pollutant
+4. Then merge the data from each of the pollutants into the final data file by running AQI_Merged_Dataset_V1_20211105.ipynb.
+5. Open the Weather_Data.ipynb file. 
+6. Run the code to collect the coordinates of the areas you need forecasted. Input the API ID you received when you created the account in the prescribed area. 
+7. Put them into a list and create the URLs in the format provided in the code. Run remaining cells to extract daily weather conditions.
+
+(2) Time Series Forecasting:
+1. Navigate to the Get Neighbours folder and run the coordinates.ipynb file. This will help you to get the 5 nearest neighbors of each county
+2. This would be used in the model as well
+3. Go to the merged with neighbors folder and run merged_dataset_with_neighbors ipynb file to combine the datasets.
+4.  This is our final dataset that will be used while modelling (merged_pollutant_dataset_with_neighbors.csv)
+5. Go to the forecasting models folder
+6. We have used 2 models – Vector autoregression and ARIMA. On finding that VAR was better, we went ahead with that.
+7. Run the VAR_model_with_neighbors_all-100.ipynb  and Arima_model files to get the models, it takes time to run the models. After running VAR_model_with_neighbors_all-100.ipynb, we will get the forecasts for the next few weeks.
+8. Run final_output ipynb file in the VAR folder to get the tomorrows_forecast.csv
+9. Run the merger_power_automate ipynb file in power_automate_input folder to get the final recommendations.
+
+(3) Power Automate:
+1. Navigate to https://powerautomate.microsoft.com/en-gb/
+2. Sign in via Georgia Tech account to access Office 365 version of Power Automate.
+3. Navigate to the CODE folder and under Power Automate folder, there is a zip package folder called Team020_6242_Final_Power_Automate_20211203163135.zip
+4. From the Power Automate menu, click on My Flows from the left hand navigation menu.
+5. There is an option at the header to import a package.
+6. Click on import and select the zip file to upload to Power Automate environment.
+7. When you import the package there will be some action items to review:
+a. Choose your import options: This will only show up if the project does not already exist in the environment. If there is an existing project, the 'action' will be either to 'Create as a new project' or 'Update the existing project'.
+b. Related Resources: This shows which connected services are being used and which account to use. As you are logging in with your account, you will need to swap the account to use. Click on the 3 actions items, 'Click new' and add a new connection (select your account). What this step will do is connect your username to utilize the connections and services of the project, which means that any steps such as fetching data or sending 	emails, it will be through your account. This is a security measure so that, developers do not utilize others accounts to send out emails.
+8. Once the action items have been resolved, the import button will enable and the project will be successfully loaded to the environment.
+9. You can click on 'My Flows' from the left hand menu, and you will be able to view the project in the environment.
+10. Click on the project name to navigate to the project homepage.
+11. Click on the 3 dots at the top right of the page to enable the flow.
+12. Click on Edit flow, and at EACH step click on the 3 dots, and swap the connection to your personal accounts. since, the connections were already successfully setup, only the account needs to be selected. In case, the account is not available, you can also click on 'Create New Connection' and add your profile into the environment. This step authorizes each step of power automate to use your account.
+13. In your OneDrive, you will need to add the final_recommendations.xlsx file and the images corresponding to weather.
+14. Once that is done, at each 'Get file content using path', change the file paths from the current path to the path of your OneDrive folder containing the files from Step 13.
+15. Once all the above steps are configured, the Power Automate is ready to go. Click on 'Save', then 'Test, then select 'Manually', click 'Run Now' and finally click 'Ok'.
+16. It will take a few seconds to run the flow, if it was successful, then the flow will show as success. If not, the power automate will show the step in which there is an error which can be resolved accordingly.
+17. The emails can be viewed and a few sample emails have been added in the 'Samples' folder under 'Power Automate'.
+18. Once the emails have been sent, it is a good practice to disable the flow to avoid any automatic recurrence of the emails.
+
+(4) Deploy web app steps:
+1. To deploy your web app, navigate to Render (render.com).  Create a free account on Render (render.com).
+2. On the Render home page, select the “New +” button on the top right next to your name and click on “Web Service”.
+3. If not done already, link your Render account to GitHub by logging into GitHub through Render. Once completed, select the repository that contains your clone of the web app on the ‘Search for a repository’ bar (repo name is in the form of “[username]/[reponame]”).
+4. Fill out the resulting form as follows:
+	a. Name: Whatever you would like to call your web app. Your website link will take the form “[appname].onrender.com”.
+	b. Environment: Python 3
+	c. Region: Oregon, USA
+	d. Branch: master
+	e. Build command: pip install -r requirements.txt
+	f. Start command: gunicorn app:app
+	g. Plan: Whatever plan that suits you
+5. Click on “Create Web Service” at the bottom. Deployment will take anywhere between 5-20 minutes. The Render command line will display the progress of deployment and notify the user once deployment is complete or interrupted due to a failure.
+6. To update your website, simply push any new commits to the GitHub web app repository. Render will take another 5-20 minutes to update relevant changes to the website. To monitor logs and events, navigate to dashboard.render.com and find your web app. 
+7. The “Events” tab displays relevant events such as deploy starts, deploys going live, and deploys failing along with times. The “Logs” tab shows you the Render shell that displays all requests and error messages pertaining to the web app. The “Disks” tab will contain the stored ‘users.db’ file that contains user registration information to be uploaded to the email recommendation system.
+
+(5) Tableau:
+1. Import tomorrow_forecast.csv and merged_and_forecast_df_final.csv
+2. Create dashboard using the above datasets.
+3. Publish to Tableau Public.
+4. Use embed link feature in the Tableau Public to generate the code to add to the web application.
