@@ -43,4 +43,6 @@ The Tableau dashboard is embedded into the web app.
 
 The link to the web app is:  https://dva-app-test.onrender.com/
 
-A short video that talks about the project - https://youtu.be/ntuTnvEP7HA
+A short video where I talk about the project - https://youtu.be/ntuTnvEP7HA
+
+If you want to know more/discuss with me about the project, checkout the code and don't hesitate to reach out to me :)
